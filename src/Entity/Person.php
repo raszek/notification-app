@@ -19,7 +19,7 @@ class Person
     #[ORM\Column(length: 60)]
     private ?string $lastname;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, unique: true)]
     private ?string $email;
 
     #[ORM\Column(length: 12)]
