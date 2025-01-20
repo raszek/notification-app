@@ -5,9 +5,8 @@ namespace App\Controller;
 use App\Entity\Person;
 use App\Form\PersonForm;
 use App\Form\PersonType;
-use App\Repository\PersonRepository;
-use App\Service\PersonEditorFactory;
-use App\Service\PersonService;
+use App\Service\Person\PersonEditorFactory;
+use App\Service\Person\PersonService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,7 +15,6 @@ class PersonController extends Controller
 {
 
     public function __construct(
-        private readonly PersonRepository $personRepository,
         private readonly PersonService $personService,
         private readonly PersonEditorFactory $personEditorFactory
     ) {
@@ -25,7 +23,7 @@ class PersonController extends Controller
     #[Route('/', 'app_person_list')]
     public function list(): Response
     {
-        $people = $this->personRepository->findAll();
+        $people = $this->personService->list();
 
         return $this->render('person/index.html.twig', [
             'people' => $people,
@@ -56,7 +54,9 @@ class PersonController extends Controller
     #[Route('/people/edit/{id}', 'app_person_edit')]
     public function edit(Person $person, Request $request): Response
     {
-        $form = $this->createForm(PersonType::class, PersonForm::fromPerson($person));
+        $personRecord = $this->personService->getRecord($person);
+
+        $form = $this->createForm(PersonType::class, PersonForm::fromPersonRecord($personRecord));
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

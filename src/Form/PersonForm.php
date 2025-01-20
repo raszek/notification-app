@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Person;
+use App\Record\PersonRecord;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class PersonForm
@@ -21,16 +22,20 @@ class PersonForm
         public ?string $email = null,
         #[Assert\Regex(Person::PHONE_REGEX)]
         public ?string $phone = null,
+        public bool $emailSubscription = false,
+        public bool $phoneSubscription = false,
     ) {
     }
 
-    public static function fromPerson(Person $person): static
+    public static function fromPersonRecord(PersonRecord $personRecord): static
     {
         return new static(
-            firstName: $person->getName(),
-            lastName: $person->getLastName(),
-            email: $person->getEmail(),
-            phone: $person->getPhone(),
+            firstName: $personRecord->firstName,
+            lastName: $personRecord->lastName,
+            email: $personRecord->email,
+            phone: $personRecord->phone,
+            emailSubscription: $personRecord->emailSubscription,
+            phoneSubscription: $personRecord->phoneSubscription,
         );
     }
 
