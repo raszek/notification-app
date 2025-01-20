@@ -14,16 +14,16 @@ class Person
     private ?int $id = null;
 
     #[ORM\Column(length: 20)]
-    private ?string $name;
+    private string $name;
 
     #[ORM\Column(length: 60)]
-    private ?string $lastname;
+    private string $lastname;
 
     #[ORM\Column(length: 100, unique: true)]
-    private ?string $email;
+    private string $email;
 
     #[ORM\Column(length: 12)]
-    private ?string $phone;
+    private string $phone;
 
     public function __construct(
         string $name,
@@ -42,23 +42,43 @@ class Person
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getLastname(): ?string
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function getLastname(): string
     {
         return $this->lastname;
     }
 
-    public function getEmail(): ?string
+    public function setLastname(string $lastname): void
+    {
+        $this->lastname = $lastname;
+    }
+
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function getPhone(): ?string
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function getPhone(): string
     {
         return $this->phone;
+    }
+
+    public function setPhone(string $phone): void
+    {
+        $this->phone = $phone;
     }
 }

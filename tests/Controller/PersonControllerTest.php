@@ -82,6 +82,47 @@ class PersonControllerTest extends WebTestCase
         $this->assertEquals('123123123', $createdPerson->getPhone());
     }
 
+    /** @test */
+    public function user_can_edit_person()
+    {
+        $client = static::createClient();
+        $client->followRedirects();
+
+        $person = PersonFactory::createOne([
+            'name' => 'Donald',
+            'lastname' => 'Henkins',
+            'email' => 'donald@gmail.com',
+            'phone' => '123123123',
+        ]);
+
+        $client->request('GET', '/people/edit/'.$person->getId());
+
+        $this->assertResponseIsSuccessful();
+
+        $crawler = $client->getCrawler();
+
+        $form = $crawler->selectButton('Update')->form();
+
+        $client->submit($form, [
+            'person[firstName]' => 'Editedname',
+            'person[lastName]' => 'Editedlastname',
+            'person[email]' => 'edited@gmail.com',
+            'person[phone]' => '234234234',
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $updatedPerson = $this->personRepository()->findOneBy([
+            'email' => 'edited@gmail.com',
+        ]);
+
+        $this->assertNotNull($updatedPerson);
+        $this->assertEquals('Editedname', $updatedPerson->getName());
+        $this->assertEquals('Editedlastname', $updatedPerson->getLastname());
+        $this->assertEquals('edited@gmail.com', $updatedPerson->getEmail());
+        $this->assertEquals('234234234', $updatedPerson->getPhone());
+    }
+
     private function personRepository(): PersonRepository
     {
         return static::getContainer()->get(PersonRepository::class);

@@ -15,6 +15,7 @@
             <th scope="col">Lastname</th>
             <th scope="col">Email</th>
             <th scope="col">Phone</th>
+            <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -25,6 +26,11 @@
                 <td>{{ person.lastname }}</td>
                 <td>{{ person.email }}</td>
                 <td>{{ person.phone }}</td>
+                <td>
+                    <a href="{{ path('app_person_edit', {id: person.id}) }}">
+                        &#9998;
+                    </a>
+                </td>
             </tr>
         {% endfor %}
         </tbody>

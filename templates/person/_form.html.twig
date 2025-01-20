@@ -1,0 +1,9 @@
+{{ form_start(form) }}
+    {{ form_row(form.firstName) }}
+    {{ form_row(form.lastName) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.phone) }}
+
+    <input type="submit" value="{{ person ? 'Update' : 'Create' }}" class="btn btn-primary">
+    <a href="{{ path('app_person_list') }}" class="btn btn-secondary ms-2">Back</a>
+{{ form_end(form) }}
