@@ -1,0 +1,16 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - project-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: notificationapp
+      POSTGRES_DB: notificationapp
+    ports:
+      - 5432:5432
+volumes:
+  project-data:
