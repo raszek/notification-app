@@ -44,8 +44,8 @@ class PersonControllerTest extends WebTestCase
             });
         });
 
-        $this->assertEquals(['John', 'Doe', 'johndoe@gmail.com', '123123123'], $tableRecords[1]);
-        $this->assertEquals(['Lisa', 'Disa', 'lisadisa@gmail.com', '234234234'], $tableRecords[2]);
+        $this->assertEquals(['John', 'Doe', 'johndoe@gmail.com', '123123123'], array_slice($tableRecords[1], 0, 4));
+        $this->assertEquals(['Lisa', 'Disa', 'lisadisa@gmail.com', '234234234'], array_slice($tableRecords[2], 0, 4));
     }
 
     /** @test */
@@ -121,6 +121,30 @@ class PersonControllerTest extends WebTestCase
         $this->assertEquals('Editedlastname', $updatedPerson->getLastname());
         $this->assertEquals('edited@gmail.com', $updatedPerson->getEmail());
         $this->assertEquals('234234234', $updatedPerson->getPhone());
+    }
+
+    /** @test */
+    public function user_can_remove_person()
+    {
+        $client = static::createClient();
+        $client->followRedirects();
+
+        $person = PersonFactory::createOne([
+            'name' => 'Donald',
+            'lastname' => 'Henkins',
+            'email' => 'donald@gmail.com',
+            'phone' => '123123123',
+        ]);
+
+        $client->request('POST', '/people/remove/'.$person->getId());
+
+        $this->assertResponseIsSuccessful();
+
+        $removedPerson = $this->personRepository()->findOneBy([
+            'email' => 'donald@gmail.com',
+        ]);
+
+        $this->assertNull($removedPerson);
     }
 
     private function personRepository(): PersonRepository

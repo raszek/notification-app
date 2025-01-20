@@ -30,4 +30,11 @@ readonly class PersonService
         return $newPerson;
     }
 
+    public function remove(Person $person): void
+    {
+        $this->entityManager->remove($person);
+
+        $this->entityManager->flush();
+    }
+
 }

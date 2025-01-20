@@ -77,4 +77,14 @@ class PersonController extends Controller
         ]);
     }
 
+    #[Route('/people/remove/{id}', 'app_person_remove', methods: ['POST'])]
+    public function remove(Person $person): Response
+    {
+        $this->personService->remove($person);
+
+        $this->addFlash('success', 'Successfully removed a person.');
+
+        return $this->redirectToRoute('app_person_list');
+    }
+
 }

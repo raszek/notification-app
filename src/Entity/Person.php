@@ -8,6 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PersonRepository::class)]
 class Person
 {
+
+    const PHONE_REGEX = '/[0-9]{9}/';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

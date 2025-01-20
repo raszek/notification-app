@@ -21,7 +21,7 @@ final class PersonFactory extends PersistentProxyObjectFactory
             'email' => self::faker()->email(),
             'lastname' => self::faker()->lastName(),
             'name' => self::faker()->firstName(),
-            'phone' => self::faker()->regexify('[0-9]{9}'),
+            'phone' => self::faker()->regexify(Person::PHONE_REGEX),
         ];
     }
 
