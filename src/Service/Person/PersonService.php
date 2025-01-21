@@ -76,6 +76,12 @@ readonly class PersonService
 
     public function remove(Person $person): void
     {
+        foreach ($this->subscriptionServiceList->subscriptionServices() as $subscriptionService) {
+            if ($subscriptionService->isSubscribing($person)) {
+                $subscriptionService->removeSubscriber($person);
+            }
+        }
+
         $this->entityManager->remove($person);
 
         $this->entityManager->flush();
