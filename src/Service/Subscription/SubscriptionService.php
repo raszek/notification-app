@@ -13,4 +13,6 @@ interface SubscriptionService extends SplObserver
     public function addSubscriber(Person $person): void;
 
     public function isSubscribing(Person $person): bool;
+
+    public function removeSubscriber(Person $person): void;
 }
