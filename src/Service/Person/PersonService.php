@@ -6,8 +6,7 @@ use App\Entity\Person;
 use App\Form\PersonForm;
 use App\Record\PersonRecord;
 use App\Repository\PersonRepository;
-use App\Service\Subscription\EmailSubscriptionService;
-use App\Service\Subscription\PhoneSubscriptionService;
+use App\Service\Subscription\SubscriptionServiceList;
 use Doctrine\ORM\EntityManagerInterface;
 
 readonly class PersonService
@@ -15,23 +14,26 @@ readonly class PersonService
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private EmailSubscriptionService $emailSubscriptionService,
-        private PhoneSubscriptionService $phoneSubscriptionService,
+        private SubscriptionServiceList $subscriptionServiceList,
         private PersonRepository $personRepository,
     ) {
     }
 
     public function getRecord(Person $person): PersonRecord
     {
-        return new PersonRecord(
-            id: $person->getId(),
-            firstName: $person->getName(),
-            lastName: $person->getLastName(),
-            email: $person->getEmail(),
-            phone: $person->getPhone(),
-            emailSubscription: $this->emailSubscriptionService->isSubscribing($person),
-            phoneSubscription: $this->phoneSubscriptionService->isSubscribing($person)
-        );
+        $record = [
+            'id' => $person->getId(),
+            'firstName' => $person->getName(),
+            'lastName' =>  $person->getLastName(),
+            'email' => $person->getEmail(),
+            'phone' => $person->getPhone(),
+        ];
+
+        foreach ($this->subscriptionServiceList->subscriptionServices() as $subscriptionService) {
+            $record[$subscriptionService->getFormField()] = $subscriptionService->isSubscribing($person);
+        }
+
+        return new PersonRecord(...$record);
     }
 
     /**
@@ -62,12 +64,11 @@ readonly class PersonService
 
         $this->entityManager->flush();
 
-        if ($form->emailSubscription) {
-            $this->emailSubscriptionService->addSubscriber($newPerson);
-        }
-
-        if ($form->phoneSubscription) {
-            $this->phoneSubscriptionService->addSubscriber($newPerson);
+        foreach ($this->subscriptionServiceList->subscriptionServices() as $subscriptionService) {
+            $formField = $subscriptionService->getFormField();
+            if ($form->$formField) {
+                $subscriptionService->addSubscriber($newPerson);
+            }
         }
 
         return $newPerson;

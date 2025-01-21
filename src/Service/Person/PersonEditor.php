@@ -4,8 +4,7 @@ namespace App\Service\Person;
 
 use App\Entity\Person;
 use App\Form\PersonForm;
-use App\Service\Subscription\EmailSubscriptionService;
-use App\Service\Subscription\PhoneSubscriptionService;
+use App\Service\Subscription\SubscriptionServiceList;
 use Doctrine\ORM\EntityManagerInterface;
 
 readonly class PersonEditor
@@ -14,8 +13,7 @@ readonly class PersonEditor
     public function __construct(
         private Person $person,
         private EntityManagerInterface $entityManager,
-        private EmailSubscriptionService $emailSubscriptionService,
-        private PhoneSubscriptionService $phoneSubscriptionService,
+        private SubscriptionServiceList $subscriptionServiceList
     ) {
     }
 
@@ -28,18 +26,14 @@ readonly class PersonEditor
         $updatedPerson->setLastName($form->lastName);
         $updatedPerson->setPhone($form->phone);
 
-        if ($form->emailSubscription && !$this->emailSubscriptionService->isSubscribing($updatedPerson)) {
-            $this->emailSubscriptionService->addSubscriber($updatedPerson);
-        } else if (!$form->emailSubscription && $this->emailSubscriptionService->isSubscribing($updatedPerson)) {
-            $this->emailSubscriptionService->removeSubscriber($updatedPerson);
+        foreach ($this->subscriptionServiceList->subscriptionServices() as $subscriptionService) {
+            $formField = $subscriptionService->getFormField();
+            if ($form->$formField && !$subscriptionService->isSubscribing($updatedPerson)) {
+                $subscriptionService->addSubscriber($updatedPerson);
+            } else if (!$form->$formField && $subscriptionService->isSubscribing($updatedPerson)) {
+                $subscriptionService->removeSubscriber($updatedPerson);
+            }
         }
-
-        if ($form->phoneSubscription && !$this->phoneSubscriptionService->isSubscribing($updatedPerson)) {
-            $this->phoneSubscriptionService->addSubscriber($updatedPerson);
-        } else if (!$form->phoneSubscription && $this->phoneSubscriptionService->isSubscribing($updatedPerson)) {
-            $this->phoneSubscriptionService->removeSubscriber($updatedPerson);
-        }
-
 
         $this->entityManager->flush();
     }

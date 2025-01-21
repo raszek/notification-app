@@ -10,7 +10,7 @@ use SplSubject;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
 #[Autoconfigure(public: true)]
-readonly class PhoneSubscriptionService implements \SplObserver
+readonly class PhoneSubscriptionService implements SubscriptionService
 {
     private CsvSubscriptionManager $csvSubscriptionManager;
 
@@ -53,5 +53,10 @@ readonly class PhoneSubscriptionService implements \SplObserver
 
             $notification->send($subject->getContent());
         }
+    }
+
+    public function getFormField(): string
+    {
+        return 'phoneSubscription';
     }
 }

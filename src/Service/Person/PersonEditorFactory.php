@@ -3,8 +3,7 @@
 namespace App\Service\Person;
 
 use App\Entity\Person;
-use App\Service\Subscription\EmailSubscriptionService;
-use App\Service\Subscription\PhoneSubscriptionService;
+use App\Service\Subscription\SubscriptionServiceList;
 use Doctrine\ORM\EntityManagerInterface;
 
 readonly class PersonEditorFactory
@@ -12,8 +11,7 @@ readonly class PersonEditorFactory
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private EmailSubscriptionService $emailSubscriptionService,
-        private PhoneSubscriptionService $phoneSubscriptionService,
+        private SubscriptionServiceList $subscriptionServiceList
     ) {
     }
 
@@ -22,8 +20,7 @@ readonly class PersonEditorFactory
         return new PersonEditor(
             person: $person,
             entityManager: $this->entityManager,
-            emailSubscriptionService: $this->emailSubscriptionService,
-            phoneSubscriptionService: $this->phoneSubscriptionService
+            subscriptionServiceList: $this->subscriptionServiceList
         );
     }
 

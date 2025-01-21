@@ -55,10 +55,10 @@ class PersonServiceTest extends KernelTestCase
 
     protected function tearDown(): void
     {
-        parent::tearDown();
-
         $this->emailSubscriptionService()->clearAllSubscribers();
         $this->phoneSubscriptionService()->clearAllSubscribers();
+
+        parent::tearDown();
     }
 
     private function create(): PersonService

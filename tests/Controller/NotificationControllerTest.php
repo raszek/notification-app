@@ -39,10 +39,10 @@ class NotificationControllerTest extends WebTestCase
 
     protected function tearDown(): void
     {
-        parent::tearDown();
-
         $this->phoneSubscriptionService()->clearAllSubscribers();
         $this->emailSubscriptionService()->clearAllSubscribers();
+
+        parent::tearDown();
     }
 
     private function phoneSubscriptionService(): PhoneSubscriptionService

@@ -2,15 +2,13 @@
 
 namespace App\Service\Notification;
 
-use App\Service\Subscription\EmailSubscriptionService;
-use App\Service\Subscription\PhoneSubscriptionService;
+use App\Service\Subscription\SubscriptionServiceList;
 
 readonly class NotificationService
 {
 
     public function __construct(
-        private EmailSubscriptionService $emailSubscriptionService,
-        private PhoneSubscriptionService $phoneSubscriptionService
+        private SubscriptionServiceList $subscriptionServiceList
     ) {
     }
 
@@ -18,8 +16,9 @@ readonly class NotificationService
     {
         $message = new Message();
 
-        $message->attach($this->emailSubscriptionService);
-        $message->attach($this->phoneSubscriptionService);
+        foreach ($this->subscriptionServiceList->subscriptionServices() as $subscriptionService) {
+            $message->attach($subscriptionService);
+        }
 
         $message->sendContent($content);
     }

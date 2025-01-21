@@ -5,13 +5,12 @@ namespace App\Service\Subscription;
 use App\Entity\Person;
 use App\Notification\EmailNotification;
 use App\Service\ProjectDirectoryService;
-use SplObserver;
 use SplSubject;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\Mailer\MailerInterface;
 
 #[Autoconfigure(public: true)]
-readonly class EmailSubscriptionService implements SplObserver
+readonly class EmailSubscriptionService implements SubscriptionService
 {
     private CsvSubscriptionManager $csvSubscriptionManager;
 
@@ -54,5 +53,10 @@ readonly class EmailSubscriptionService implements SplObserver
 
             $notification->send($subject->getContent());
         }
+    }
+
+    public function getFormField(): string
+    {
+        return 'emailSubscription';
     }
 }
