@@ -33,6 +33,8 @@ readonly class CsvSubscriptionManager
 
     public function removeSubscriber(int $id): void
     {
+        $this->createFileIfNotExist();
+
         $rowNumber = $this->findRowNumberById($id);
 
         if ($rowNumber === null) {
@@ -48,6 +50,23 @@ readonly class CsvSubscriptionManager
         unset($fileOut[$rowNumber]);
 
         file_put_contents($this->subscriptionFile(), implode('', $fileOut));
+    }
+
+    public function getSubscribers(): array
+    {
+        $this->createFileIfNotExist();
+
+        $stream = $this->openToRead();
+
+        $records = [];
+        while (($data = fgetcsv($stream, 1000)) !== false) {
+            $records[] = [
+                'id' => $data[0],
+                'value' => $data[1],
+            ];
+        }
+
+        return $records;
     }
 
     public function isSubscribing(string $id): bool
@@ -72,11 +91,7 @@ readonly class CsvSubscriptionManager
 
     private function findRowNumberById(string $id): ?int
     {
-        $stream = fopen($this->subscriptionFile(), 'r');
-
-        if ($stream === false) {
-            throw new RuntimeException('Could not open to read email subscription file');
-        }
+        $stream = $this->openToRead();
 
         $i = 0;
         while (($data = fgetcsv($stream, 1000)) !== false) {
@@ -92,11 +107,7 @@ readonly class CsvSubscriptionManager
 
     private function findSubscriberById(string $id): ?array
     {
-        $stream = fopen($this->subscriptionFile(), 'r');
-
-        if ($stream === false) {
-            throw new RuntimeException('Could not open to read email subscription file');
-        }
+        $stream = $this->openToRead();
 
         while (($data = fgetcsv($stream, 1000)) !== false) {
             if ($data[0] === $id) {
@@ -107,6 +118,20 @@ readonly class CsvSubscriptionManager
 
         fclose($stream);
         return null;
+    }
+
+    /**
+     * @return resource
+     */
+    private function openToRead()
+    {
+        $stream = fopen($this->subscriptionFile(), 'r');
+
+        if ($stream === false) {
+            throw new RuntimeException('Could not open to read email subscription file');
+        }
+
+        return $stream;
     }
 
     private function createFileIfNotExist(): void

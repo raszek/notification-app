@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Service;
+namespace App\Tests\Service\Person;
 
 use App\Form\PersonForm;
 use App\Service\Person\PersonService;

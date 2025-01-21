@@ -3,16 +3,21 @@
 namespace App\Service\Subscription;
 
 use App\Entity\Person;
+use App\Notification\EmailNotification;
 use App\Service\ProjectDirectoryService;
+use SplObserver;
+use SplSubject;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\Mailer\MailerInterface;
 
 #[Autoconfigure(public: true)]
-readonly class EmailSubscriptionService
+readonly class EmailSubscriptionService implements SplObserver
 {
     private CsvSubscriptionManager $csvSubscriptionManager;
 
     public function __construct(
         ProjectDirectoryService $projectDirectoryService,
+        private MailerInterface $mailer,
         string $subscriptionFileName
     ) {
         $this->csvSubscriptionManager = new CsvSubscriptionManager(
@@ -40,4 +45,14 @@ readonly class EmailSubscriptionService
         $this->csvSubscriptionManager->clearAllSubscribers();
     }
 
+    public function update(SplSubject $subject): void
+    {
+        $subscribers = $this->csvSubscriptionManager->getSubscribers();
+
+        foreach ($subscribers as $subscriber) {
+            $notification = new EmailNotification($this->mailer, $subscriber['value']);
+
+            $notification->send($subject->getContent());
+        }
+    }
 }

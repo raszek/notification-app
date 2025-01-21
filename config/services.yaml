@@ -33,3 +33,6 @@ services:
     App\Service\Subscription\PhoneSubscriptionService:
         arguments:
             $subscriptionFileName: '%env(PHONE_SUBSCRIPTION_FILENAME)%'
+
+    App\Service\Sms\SmsApiInterface:
+        class: App\Service\Sms\TwilioApi
