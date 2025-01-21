@@ -4,8 +4,11 @@ namespace App\Form;
 
 use App\Entity\Person;
 use App\Record\PersonRecord;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[UniqueEntity('email', entityClass: Person::class)]
+#[UniqueEntity('phone', entityClass: Person::class)]
 class PersonForm
 {
 
